@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.maul.app.ws.UserRepository;
 import com.maul.app.ws.io.entity.UserEntity;
+import com.maul.app.ws.io.repositories.UserRepository;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.Utils;
 import com.maul.app.ws.shared.dto.UserDto;
@@ -59,6 +59,16 @@ public class UserServiceImpl implements UserService {
 			throw new UsernameNotFoundException(email);
 
 		return new User(userEntity.getEmail(), userEntity.getEncryptedPassowrd(), new ArrayList<>());
+	}
+
+	@Override
+	public UserDto getUser(String email) {
+		UserEntity userEntity = userRepository.findByEmail(email);
+		if (userEntity == null)
+			throw new UsernameNotFoundException(email);
+		UserDto returnValue = new UserDto();
+		BeanUtils.copyProperties(userEntity, returnValue);
+		return returnValue;
 	}
 
 }
