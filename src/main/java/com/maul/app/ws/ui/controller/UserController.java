@@ -17,6 +17,9 @@ import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
+import com.maul.app.ws.ui.model.response.OperationStatusModel;
+import com.maul.app.ws.ui.model.response.RequestOperationName;
+import com.maul.app.ws.ui.model.response.RequestOperationStatus;
 import com.maul.app.ws.ui.model.response.UserRest;
 
 @CrossOrigin(origins = "http://localhost:8081")
@@ -71,8 +74,15 @@ public class UserController {
 		return returnValue;
 	}
 
-	@DeleteMapping
-	public String deleteUser() {
-		return "delete user was called";
+	@DeleteMapping("/user/{id}")
+	public OperationStatusModel deleteUser(@PathVariable String id) {
+		OperationStatusModel returnValue = new OperationStatusModel();
+		returnValue.setOperationName(RequestOperationName.DELETE.name());
+
+		userService.deleteUser(id);
+
+		returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+
+		return returnValue;
 	}
 }
