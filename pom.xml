@@ -15,7 +15,7 @@
 	<name>app-ws</name>
 	<description>project for Spring Boot</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
