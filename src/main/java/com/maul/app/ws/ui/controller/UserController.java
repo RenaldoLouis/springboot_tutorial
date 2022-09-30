@@ -28,7 +28,7 @@ import com.maul.app.ws.ui.model.response.UserRest;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
-@RequestMapping("/maul")
+@RequestMapping("/users")
 public class UserController {
 
 	@Autowired

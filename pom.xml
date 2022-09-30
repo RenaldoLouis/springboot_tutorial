@@ -12,8 +12,11 @@
 	<groupId>com.maul.app.ws</groupId>
 	<artifactId>app-ws</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	
 	<name>app-ws</name>
 	<description>project for Spring Boot</description>
+	
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -71,6 +74,10 @@
 		<dependency>
 		    <groupId>com.fasterxml.jackson.dataformat</groupId>
 		    <artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
 		</dependency>
 	</dependencies>
 
