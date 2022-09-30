@@ -1,5 +1,8 @@
 package com.maul.app.ws.ui.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maul.app.ws.exceptions.UserServiceException;
@@ -30,9 +34,21 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
-	@GetMapping("/getUsers")
-	public String getUsers() {
-		return "get All user was called";
+	@GetMapping("/user")
+	public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "limit", defaultValue = "10") int limit) {
+
+		List<UserRest> returnedValue = new ArrayList<>();
+
+		List<UserDto> userDtos = userService.getUsers(page, limit);
+
+		for (UserDto userDto : userDtos) {
+			UserRest userModel = new UserRest();
+			BeanUtils.copyProperties(userDto, userModel);
+			returnedValue.add(userModel);
+		}
+
+		return returnedValue;
 	}
 
 	@GetMapping("/user/{id}")
