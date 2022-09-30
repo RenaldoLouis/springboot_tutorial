@@ -121,6 +121,9 @@ public class UserServiceImpl implements UserService {
 	public List<UserDto> getUsers(int page, int limit) {
 		List<UserDto> returnedValue = new ArrayList<>();
 
+		if (page > 0)
+			page -= 1;
+
 		org.springframework.data.domain.Pageable pageableRequest = PageRequest.of(page, limit);
 
 		Page<UserEntity> usersPage = userRepository.findAll(pageableRequest);
