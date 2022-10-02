@@ -3,6 +3,7 @@ package com.maul.app.ws.ui.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,74 +32,79 @@ import com.maul.app.ws.ui.model.response.UserRest;
 @RequestMapping("/users")
 public class UserController {
 
-	@Autowired
-	UserService userService;
+    @Autowired
+    UserService userService;
 
-	@GetMapping("/user")
-	public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(value = "limit", defaultValue = "10") int limit) {
+    @GetMapping("/user")
+    public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
-		List<UserRest> returnedValue = new ArrayList<>();
+        List<UserRest> returnedValue = new ArrayList<>();
 
-		List<UserDto> userDtos = userService.getUsers(page, limit);
+        List<UserDto> userDtos = userService.getUsers(page, limit);
 
-		for (UserDto userDto : userDtos) {
-			UserRest userModel = new UserRest();
-			BeanUtils.copyProperties(userDto, userModel);
-			returnedValue.add(userModel);
-		}
+        for (UserDto userDto : userDtos) {
+            UserRest userModel = new UserRest();
+            BeanUtils.copyProperties(userDto, userModel);
+            returnedValue.add(userModel);
+        }
 
-		return returnedValue;
-	}
+        return returnedValue;
+    }
 
-	@GetMapping("/user/{id}")
-	public UserRest getUser(@PathVariable String id) {
-		UserRest returnValue = new UserRest();
+    @GetMapping("/user/{id}")
+    public UserRest getUser(@PathVariable String id) {
+        UserRest returnValue = new UserRest();
 
-		UserDto userDto = userService.getUserByUserId(id);
-		BeanUtils.copyProperties(userDto, returnValue);
+        UserDto userDto = userService.getUserByUserId(id);
+        BeanUtils.copyProperties(userDto, returnValue);
 
-		return returnValue;
-	}
+        return returnValue;
+    }
 
-	@PostMapping("/signUp")
-	public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
-		UserRest returnValue = new UserRest();
+    @PostMapping("/signUp")
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
+        UserRest returnValue = new UserRest();
 
-		if (userDetails.getFirstName().isEmpty())
-			throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        if (userDetails.getFirstName().isEmpty())
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 
-		UserDto userDto = new UserDto();
-		BeanUtils.copyProperties(userDetails, userDto);
+        // Shallow Copy
+//		UserDto userDto = new UserDto();
+//		BeanUtils.copyProperties(userDetails, userDto);
 
-		UserDto createdUser = userService.createUser(userDto);
-		BeanUtils.copyProperties(createdUser, returnValue);
+        // Deep Copy (should use this if theres object in object
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetails, UserDto.class);
 
-		return returnValue;
-	}
+        UserDto createdUser = userService.createUser(userDto);
+        returnValue = modelMapper.map(createdUser, UserRest.class);
 
-	@PutMapping(path = "/user/{id}")
-	public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
-		UserRest returnValue = new UserRest();
+        return returnValue;
+    }
 
-		UserDto userDto = new UserDto();
-		BeanUtils.copyProperties(userDetails, userDto);
+    @PutMapping(path = "/user/{id}")
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
+        UserRest returnValue = new UserRest();
 
-		UserDto updatedUser = userService.updateUser(id, userDto);
-		BeanUtils.copyProperties(updatedUser, returnValue);
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userDetails, userDto);
 
-		return returnValue;
-	}
+        UserDto updatedUser = userService.updateUser(id, userDto);
+        BeanUtils.copyProperties(updatedUser, returnValue);
 
-	@DeleteMapping("/user/{id}")
-	public OperationStatusModel deleteUser(@PathVariable String id) {
-		OperationStatusModel returnValue = new OperationStatusModel();
-		returnValue.setOperationName(RequestOperationName.DELETE.name());
+        return returnValue;
+    }
 
-		userService.deleteUser(id);
+    @DeleteMapping("/user/{id}")
+    public OperationStatusModel deleteUser(@PathVariable String id) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.DELETE.name());
 
-		returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        userService.deleteUser(id);
 
-		return returnValue;
-	}
+        returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+
+        return returnValue;
+    }
 }
