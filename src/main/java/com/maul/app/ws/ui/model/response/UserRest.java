@@ -1,41 +1,53 @@
 package com.maul.app.ws.ui.model.response;
 
+import java.util.List;
+
 public class UserRest {
-	private String userId;
-	private String firstName;
-	private String lastName;
-	private String email;
+    private String userId;
+    private String firstName;
+    private String lastName;
+    private String email;
 
-	public String getUserId() {
-		return userId;
-	}
+    private List<AddressesRest> addresses;
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public String getUserId() {
+        return userId;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<AddressesRest> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressesRest> addresses) {
+        this.addresses = addresses;
+    }
 
 }
