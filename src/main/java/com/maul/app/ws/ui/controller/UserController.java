@@ -1,9 +1,11 @@
 package com.maul.app.ws.ui.controller;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maul.app.ws.exceptions.UserServiceException;
+import com.maul.app.ws.service.AddressService;
 import com.maul.app.ws.service.UserService;
+import com.maul.app.ws.shared.dto.AddressDTO;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
+import com.maul.app.ws.ui.model.response.AddressesRest;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
 import com.maul.app.ws.ui.model.response.OperationStatusModel;
 import com.maul.app.ws.ui.model.response.RequestOperationName;
@@ -35,7 +40,10 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/user")
+    @Autowired
+    AddressService addressService;
+
+    @GetMapping()
     public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "10") int limit) {
 
@@ -52,7 +60,7 @@ public class UserController {
         return returnedValue;
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public UserRest getUser(@PathVariable String id) {
         UserRest returnValue = new UserRest();
 
@@ -83,7 +91,7 @@ public class UserController {
         return returnValue;
     }
 
-    @PutMapping(path = "/user/{id}")
+    @PutMapping(path = "/{id}")
     public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
         UserRest returnValue = new UserRest();
 
@@ -96,7 +104,7 @@ public class UserController {
         return returnValue;
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public OperationStatusModel deleteUser(@PathVariable String id) {
         OperationStatusModel returnValue = new OperationStatusModel();
         returnValue.setOperationName(RequestOperationName.DELETE.name());
@@ -104,6 +112,24 @@ public class UserController {
         userService.deleteUser(id);
 
         returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+
+        return returnValue;
+    }
+
+    @GetMapping(path = "/{id}/addresses")
+    public List<AddressesRest> getUserAddresses(@PathVariable String id) {
+        List<AddressesRest> returnValue = new ArrayList<>();
+
+        List<AddressDTO> addressDTO = addressService.getAddresses(id);
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        if (addressDTO != null && !addressDTO.isEmpty()) {
+
+            Type listType = new TypeToken<List<AddressesRest>>() {
+            }.getType();
+            returnValue = modelMapper.map(addressDTO, listType);
+        }
 
         return returnValue;
     }
