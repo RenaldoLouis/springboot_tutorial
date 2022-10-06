@@ -12,4 +12,6 @@ import com.maul.app.ws.io.entity.UserEntity;
 public interface AddressRepository extends CrudRepository<AddressEntity, Long> {
     List<AddressEntity> findAllByUserDetails(UserEntity userEntity);
 
+    AddressEntity findByAddressId(String addressId);
+
 }
