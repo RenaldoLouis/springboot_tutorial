@@ -23,6 +23,7 @@ import com.maul.app.ws.exceptions.UserServiceException;
 import com.maul.app.ws.service.AddressService;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.AddressDTO;
+import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.PasswordResetRequestModel;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
@@ -31,6 +32,7 @@ import com.maul.app.ws.ui.model.response.ErrorMessages;
 import com.maul.app.ws.ui.model.response.OperationStatusModel;
 import com.maul.app.ws.ui.model.response.RequestOperationName;
 import com.maul.app.ws.ui.model.response.RequestOperationStatus;
+import com.maul.app.ws.ui.model.response.ResetPasswordRequestRest;
 import com.maul.app.ws.ui.model.response.UserRest;
 
 @CrossOrigin(origins = "http://localhost:8081")
@@ -145,18 +147,19 @@ public class UserController {
     }
 
     @PostMapping(path = "/passwordResetRequest")
-    public OperationStatusModel requestReset(@RequestBody PasswordResetRequestModel passwordResetModel) {
-        OperationStatusModel returnValue = new OperationStatusModel();
+    public ResetPasswordRequestRest requestReset(@RequestBody PasswordResetRequestModel passwordResetModel) {
+        ResetPasswordRequestRest returnValue = new ResetPasswordRequestRest();
 
-        boolean operationResult = userService.requestPasswordReset(passwordResetModel.getEmail());
+        PasswordResetRequestDTO passwordResetRequestDTO = userService
+                .requestPasswordReset(passwordResetModel.getEmail());
 
-        returnValue.setOperationName(RequestOperationName.REQUEST_PASSWORD_RESET.name());
-        returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
-
-        if (operationResult) {
-            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
-        }
+        BeanUtils.copyProperties(passwordResetRequestDTO, returnValue);
 
         return returnValue;
+//
+//        UserDto userDto = userService.getUserByUserId(id);
+//        BeanUtils.copyProperties(userDto, returnValue);
+//
+//        return returnValue;
     }
 }

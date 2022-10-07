@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
 
 public interface UserService extends UserDetailsService {
@@ -21,5 +22,5 @@ public interface UserService extends UserDetailsService {
 
     boolean verifyEmailToken(String token);
 
-    boolean requestPasswordReset(String email);
+    PasswordResetRequestDTO requestPasswordReset(String email);
 }

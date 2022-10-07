@@ -24,6 +24,7 @@ import com.maul.app.ws.io.repositories.UserRepository;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.Utils;
 import com.maul.app.ws.shared.dto.AddressDTO;
+import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
 
@@ -175,8 +176,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean requestPasswordReset(String email) {
-        boolean returnValue = false;
+    public PasswordResetRequestDTO requestPasswordReset(String email) {
+        PasswordResetRequestDTO returnValue = new PasswordResetRequestDTO();
 
         UserEntity userEntity = userRepository.findByEmail(email);
 
@@ -189,10 +190,11 @@ public class UserServiceImpl implements UserService {
         PasswordResetTokenEntity passwordResetTokenEntity = new PasswordResetTokenEntity();
         passwordResetTokenEntity.setToken(token);
         passwordResetTokenEntity.setUserDetails(userEntity);
-        passwordResetTokenRepository.save(passwordResetTokenEntity);
+        PasswordResetTokenEntity tokenReset = passwordResetTokenRepository.save(passwordResetTokenEntity);
+
+        BeanUtils.copyProperties(tokenReset, returnValue);
 
 //        returnValue = new AmazonSES().sendPasswordResetRequest(userEntity.getFirstName(), userEntity.getEmail(), token);
-        returnValue = true;
 
         return returnValue;
     }
