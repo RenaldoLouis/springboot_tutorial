@@ -14,42 +14,43 @@ import com.maul.app.ws.service.UserService;
 
 @EnableWebSecurity
 public class WebSecurity {
-	private final UserService userDetailsService;
-	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserService userDetailsService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-		this.userDetailsService = userService;
-		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-	}
+    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userDetailsService = userService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
 
-	@Bean
-	protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		// Configure AuthenticationManagerBuilder
-		AuthenticationManagerBuilder authenticationManagerBuilder = http
-				.getSharedObject(AuthenticationManagerBuilder.class);
+    @Bean
+    protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        // Configure AuthenticationManagerBuilder
+        AuthenticationManagerBuilder authenticationManagerBuilder = http
+                .getSharedObject(AuthenticationManagerBuilder.class);
 
-		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
 
-		AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
-		http.authenticationManager(authenticationManager);
-		// Configure to allow API createUser accescible for all User even the one that
-		// are not authenthicated
-		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
-				.permitAll().anyRequest().authenticated().and()
-				.addFilter(getAuthenticationFilter(authenticationManager))
-				.addFilter(new AuthorizationFilter(authenticationManager)).sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+        http.authenticationManager(authenticationManager);
+        // Configure to allow API createUser accescible for all User even the one that
+        // are not authenthicated
+        http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
+                .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_REQUEST_URL)
+                .permitAll().anyRequest().authenticated().and()
+                .addFilter(getAuthenticationFilter(authenticationManager))
+                .addFilter(new AuthorizationFilter(authenticationManager)).sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		return http.build();
-	}
+        return http.build();
+    }
 
-	public AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) throws Exception {
-		final AuthenticationFilter filter = new AuthenticationFilter(authenticationManager);
-		filter.setFilterProcessesUrl("/users/login");
-		return filter;
-	}
+    public AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) throws Exception {
+        final AuthenticationFilter filter = new AuthenticationFilter(authenticationManager);
+        filter.setFilterProcessesUrl("/users/login");
+        return filter;
+    }
 
-	// OLD WAY WITH WebSecurityConfigurerAdapter
+    // OLD WAY WITH WebSecurityConfigurerAdapter
 //	@Override
 //	protected void configure(HttpSecurity http) throws Exception {
 //		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/maul/createUser").permitAll()

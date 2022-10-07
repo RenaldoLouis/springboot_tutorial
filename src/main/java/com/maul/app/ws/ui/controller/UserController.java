@@ -24,6 +24,7 @@ import com.maul.app.ws.service.AddressService;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.AddressDTO;
 import com.maul.app.ws.shared.dto.UserDto;
+import com.maul.app.ws.ui.model.request.PasswordResetRequestModel;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.maul.app.ws.ui.model.response.AddressesRest;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
@@ -141,5 +142,21 @@ public class UserController {
         ModelMapper modelMapper = new ModelMapper();
 
         return modelMapper.map(addressDTO, AddressesRest.class);
+    }
+
+    @PostMapping(path = "/passwordResetRequest")
+    public OperationStatusModel requestReset(@RequestBody PasswordResetRequestModel passwordResetModel) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+
+        boolean operationResult = userService.requestPasswordReset(passwordResetModel.getEmail());
+
+        returnValue.setOperationName(RequestOperationName.REQUEST_PASSWORD_RESET.name());
+        returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+
+        if (operationResult) {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        }
+
+        return returnValue;
     }
 }
