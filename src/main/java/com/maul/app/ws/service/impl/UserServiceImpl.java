@@ -190,9 +190,9 @@ public class UserServiceImpl implements UserService {
         PasswordResetTokenEntity passwordResetTokenEntity = new PasswordResetTokenEntity();
         passwordResetTokenEntity.setToken(token);
         passwordResetTokenEntity.setUserDetails(userEntity);
-        PasswordResetTokenEntity tokenReset = passwordResetTokenRepository.save(passwordResetTokenEntity);
+        passwordResetTokenRepository.save(passwordResetTokenEntity);
 
-        BeanUtils.copyProperties(tokenReset, returnValue);
+        BeanUtils.copyProperties(passwordResetTokenEntity, returnValue);
 
 //        returnValue = new AmazonSES().sendPasswordResetRequest(userEntity.getFirstName(), userEntity.getEmail(), token);
 
