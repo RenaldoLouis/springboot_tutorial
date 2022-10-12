@@ -17,50 +17,52 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maul.app.ws.SpringApplicationContext;
+import com.maul.app.ws.exceptions.UserServiceException;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.UserLoginRequestModel;
+import com.maul.app.ws.ui.model.response.ErrorMessages;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-	public AuthenticationFilter(AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
+    public AuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
-			throws org.springframework.security.core.AuthenticationException {
-		try {
-			UserLoginRequestModel creds = new ObjectMapper().readValue(req.getInputStream(),
-					UserLoginRequestModel.class);
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
+            throws org.springframework.security.core.AuthenticationException {
+        try {
+            UserLoginRequestModel creds = new ObjectMapper().readValue(req.getInputStream(),
+                    UserLoginRequestModel.class);
 
-			return authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>()));
-		} catch (java.io.IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+            return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>()));
+        } catch (java.io.IOException e) {
+            throw new UserServiceException(ErrorMessages.TOKEN_EXPIRED.getErrorMessage());
+        }
+    }
 
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
-			Authentication auth) throws IOException, ServletException {
-		String userName = ((User) auth.getPrincipal()).getUsername();
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
+            Authentication auth) throws IOException, ServletException {
+        String userName = ((User) auth.getPrincipal()).getUsername();
 
-		String token = Jwts.builder().setSubject(userName)
-				.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-				.signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret()).compact();
+        String token = Jwts.builder().setSubject(userName)
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret()).compact();
 
-		UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
+        UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
 
-		UserDto userDto = userService.getUser(userName);
+        UserDto userDto = userService.getUser(userName);
 
-		res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
-		res.addHeader("UserID", userDto.getUserId());
-	}
+        res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
+        res.addHeader("UserID", userDto.getUserId());
+    }
 }

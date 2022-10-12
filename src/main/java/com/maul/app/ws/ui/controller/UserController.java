@@ -25,6 +25,7 @@ import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.AddressDTO;
 import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
+import com.maul.app.ws.ui.model.request.PasswordResetModel;
 import com.maul.app.ws.ui.model.request.PasswordResetRequestModel;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.maul.app.ws.ui.model.response.AddressesRest;
@@ -156,10 +157,23 @@ public class UserController {
         BeanUtils.copyProperties(passwordResetRequestDTO, returnValue);
 
         return returnValue;
-//
-//        UserDto userDto = userService.getUserByUserId(id);
-//        BeanUtils.copyProperties(userDto, returnValue);
-//
-//        return returnValue;
     }
+
+    @PostMapping(path = "/passwordReset")
+    public OperationStatusModel resetPassword(@RequestBody PasswordResetModel passwordResetModel) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+
+        boolean operationResult = userService.resetPassword(passwordResetModel.getToken(),
+                passwordResetModel.getPassword());
+
+        returnValue.setOperationName(RequestOperationStatus.PASSWORD_RESET.name());
+        returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+
+        if (operationResult) {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        }
+
+        return returnValue;
+    }
+
 }
