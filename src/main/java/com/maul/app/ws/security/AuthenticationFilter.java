@@ -22,6 +22,7 @@ import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.UserLoginRequestModel;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
+import com.maul.app.ws.ui.model.response.LoginRest;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -52,6 +53,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
             Authentication auth) throws IOException, ServletException {
+        LoginRest returnValue = new LoginRest();
+
         String userName = ((User) auth.getPrincipal()).getUsername();
 
         String token = Jwts.builder().setSubject(userName)
@@ -64,5 +67,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
         res.addHeader("UserID", userDto.getUserId());
+
+        returnValue.setToken(token);
+        returnValue.setUserID(userDto.getUserId());
+
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+        res.getWriter().write(new ObjectMapper().writeValueAsString(returnValue));
+
     }
+
 }
