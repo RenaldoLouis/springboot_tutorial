@@ -180,12 +180,16 @@ public class UserController {
     public OperationStatusModel confirmUser(@PathVariable String id) {
         OperationStatusModel returnValue = new OperationStatusModel();
 
-        boolean operationResult = userService.confirmUser(id);
+        String operationResult = userService.confirmUser(id);
 
         returnValue.setOperationName(RequestOperationName.CONFIRM_USER.name());
         returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
 
-        if (operationResult) {
+        if (operationResult == "existed") {
+            returnValue.setOperationResult(RequestOperationStatus.ALREADY_CONFIRMED.name());
+        }
+
+        if (operationResult == "true") {
             returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
         }
 

@@ -106,17 +106,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean confirmUser(String userId) {
-        boolean returnValue = true;
+    public String confirmUser(String userId) {
+        String returnValue = "true";
         UserEntity userEntity = userRepository.findByUserId(userId);
 
-        if (userEntity != null)
-            userEntity.setEmailVerificationStatus(returnValue);
-        userRepository.save(userEntity);
-
-        if (userEntity == null)
+        if (userEntity == null) {
             throw new UsernameNotFoundException("User With ID : " + userId + " Not Found");
+        }
 
+        if (userEntity.getEmailVerificationStatus() == true) {
+            returnValue = "existed";
+        }
+
+        if (userEntity != null) {
+            userEntity.setEmailVerificationStatus(true);
+            userRepository.save(userEntity);
+        }
         return returnValue;
     }
 
