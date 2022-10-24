@@ -14,11 +14,15 @@ public interface UserService extends UserDetailsService {
 
     UserDto getUserByUserId(String userId);
 
+    boolean confirmUser(String userId);
+
     UserDto updateUser(String userId, UserDto user);
 
     void deleteUser(String userId);
 
     List<UserDto> getUsers(int page, int limit);
+
+    List<UserDto> getConfirmedUsers(int page, int limit);
 
     boolean verifyEmailToken(String token);
 

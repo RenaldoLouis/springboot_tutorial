@@ -166,7 +166,7 @@ public class UserController {
         boolean operationResult = userService.resetPassword(passwordResetModel.getToken(),
                 passwordResetModel.getPassword());
 
-        returnValue.setOperationName(RequestOperationStatus.PASSWORD_RESET.name());
+        returnValue.setOperationName(RequestOperationName.PASSWORD_RESET.name());
         returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
 
         if (operationResult) {
@@ -174,6 +174,39 @@ public class UserController {
         }
 
         return returnValue;
+    }
+
+    @PostMapping(path = "/confirmUser/{id}")
+    public OperationStatusModel confirmUser(@PathVariable String id) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+
+        boolean operationResult = userService.confirmUser(id);
+
+        returnValue.setOperationName(RequestOperationName.CONFIRM_USER.name());
+        returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+
+        if (operationResult) {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        }
+
+        return returnValue;
+    }
+
+    @GetMapping(path = "/getConfirmedUser")
+    public List<UserRest> getConfirmedUser(@RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
+
+        List<UserRest> returnedValue = new ArrayList<>();
+
+        List<UserDto> userDtos = userService.getConfirmedUsers(page, limit);
+
+        for (UserDto userDto : userDtos) {
+            UserRest userModel = new UserRest();
+            BeanUtils.copyProperties(userDto, userModel);
+            returnedValue.add(userModel);
+        }
+
+        return returnedValue;
     }
 
 }

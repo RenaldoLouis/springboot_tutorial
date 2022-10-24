@@ -106,6 +106,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean confirmUser(String userId) {
+        boolean returnValue = true;
+        UserEntity userEntity = userRepository.findByUserId(userId);
+
+        if (userEntity != null)
+            userEntity.setEmailVerificationStatus(returnValue);
+        userRepository.save(userEntity);
+
+        if (userEntity == null)
+            throw new UsernameNotFoundException("User With ID : " + userId + " Not Found");
+
+        return returnValue;
+    }
+
+    @Override
     public UserDto updateUser(String userId, UserDto user) {
         UserDto returnValue = new UserDto();
         UserEntity userEntity = userRepository.findByUserId(userId);
@@ -230,6 +245,28 @@ public class UserServiceImpl implements UserService {
         passwordResetTokenRepository.delete(passwordResetTokenEntity);
 
         return returnValue;
+    }
+
+    @Override
+    public List<UserDto> getConfirmedUsers(int page, int limit) {
+        List<UserDto> returnedValue = new ArrayList<>();
+
+        if (page > 0)
+            page -= 1;
+
+        org.springframework.data.domain.Pageable pageableRequest = PageRequest.of(page, limit);
+
+        Page<UserEntity> usersPage = userRepository.findAllUsersWithConfirmedEmailAddress(pageableRequest);
+
+        List<UserEntity> users = usersPage.getContent();
+
+        for (UserEntity userEntity : users) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(userEntity, userDto);
+            returnedValue.add(userDto);
+        }
+
+        return returnedValue;
     }
 
 }
