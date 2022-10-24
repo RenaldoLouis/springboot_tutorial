@@ -14,6 +14,8 @@ public interface UserService extends UserDetailsService {
 
     UserDto getUserByUserId(String userId);
 
+    List<UserDto> findUserByFirstName(int page, int limit, String firstName);
+
     String confirmUser(String userId);
 
     UserDto updateUser(String userId, UserDto user);
@@ -29,4 +31,5 @@ public interface UserService extends UserDetailsService {
     PasswordResetRequestDTO requestPasswordReset(String email);
 
     boolean resetPassword(String token, String password);
+
 }

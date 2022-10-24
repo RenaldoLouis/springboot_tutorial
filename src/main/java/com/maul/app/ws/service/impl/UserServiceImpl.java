@@ -17,8 +17,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.maul.app.ws.exceptions.UserServiceException;
+import com.maul.app.ws.io.entity.AddressEntity;
 import com.maul.app.ws.io.entity.PasswordResetTokenEntity;
 import com.maul.app.ws.io.entity.UserEntity;
+import com.maul.app.ws.io.repositories.AddressRepository;
 import com.maul.app.ws.io.repositories.PasswordResetTokenRepository;
 import com.maul.app.ws.io.repositories.UserRepository;
 import com.maul.app.ws.service.UserService;
@@ -33,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AddressRepository addressRepository;
 
     @Autowired
     Utils utils;
@@ -170,6 +175,36 @@ public class UserServiceImpl implements UserService {
         for (UserEntity userEntity : users) {
             UserDto userDto = new UserDto();
             BeanUtils.copyProperties(userEntity, userDto);
+            returnedValue.add(userDto);
+        }
+
+        return returnedValue;
+    }
+
+    @Override
+    public List<UserDto> findUserByFirstName(int page, int limit, String firstName) {
+        List<UserDto> returnedValue = new ArrayList<>();
+
+        if (page > 0)
+            page -= 1;
+
+        org.springframework.data.domain.Pageable pageableRequest = PageRequest.of(page, limit);
+
+        Page<UserEntity> usersPage = userRepository.findUserByFirstName(pageableRequest, firstName);
+
+        List<UserEntity> users = usersPage.getContent();
+
+        for (UserEntity userEntity : users) {
+            UserDto userDto = new UserDto();
+            List<AddressDTO> addressDTO = new ArrayList<>();
+            BeanUtils.copyProperties(userEntity, userDto);
+            List<AddressEntity> addresses = addressRepository.findAllByUserDetails(userEntity);
+            for (AddressEntity addressEntity : addresses) {
+                AddressDTO addressModel = new AddressDTO();
+                BeanUtils.copyProperties(addressEntity, addressModel);
+                addressDTO.add(addressModel);
+            }
+            userDto.setAddresses(addressDTO);
             returnedValue.add(userDto);
         }
 

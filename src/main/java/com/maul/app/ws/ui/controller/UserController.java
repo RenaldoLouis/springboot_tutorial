@@ -213,4 +213,29 @@ public class UserController {
         return returnedValue;
     }
 
+    @GetMapping(path = "/findUserFirstName")
+    public List<UserRest> findUserFirstName(@RequestParam String firstName,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
+
+        List<UserRest> returnedValue = new ArrayList<>();
+
+        List<UserDto> userDtos = userService.findUserByFirstName(page, limit, firstName);
+
+        for (UserDto userDto : userDtos) {
+            UserRest userModel = new UserRest();
+            List<AddressesRest> addressModel = new ArrayList<>();
+            BeanUtils.copyProperties(userDto, userModel);
+            for (AddressDTO addressDTO : userDto.getAddresses()) {
+                AddressesRest addressRest = new AddressesRest();
+                BeanUtils.copyProperties(addressDTO, addressRest);
+                addressModel.add(addressRest);
+            }
+            userModel.setAddresses(addressModel);
+            returnedValue.add(userModel);
+        }
+
+        return returnedValue;
+    }
+
 }
