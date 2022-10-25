@@ -18,6 +18,9 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 
     UserEntity findByUserId(String userId);
 
+    @Query("select user from UserEntity user where user.userId =:userId")
+    UserEntity findUserEntityByUserId(@Param(value = "userId") String userId);
+
     UserEntity findUserByEmailVerificationToken(String token);
 
     @Query(value = "select * from Users u where u.EMAIL_VERIFICATION_STATUS = 'true'", countQuery = "select count(*) from Users u where u.EMAIL_VERIFICATION_STATUS = 'true'", nativeQuery = true)
@@ -37,4 +40,5 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
     @Query(value = "update Users set EMAIL_VERIFICATION_STATUS=:emailVerificationStatus where user_id=:userId", nativeQuery = true)
     void updateUserEmailVerificationStatus(@Param("emailVerificationStatus") boolean emailVerificationStatus,
             @Param("userId") String userId);
+
 }
