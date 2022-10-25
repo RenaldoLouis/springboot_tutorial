@@ -137,7 +137,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public String updateUserEmailStatus(String userId, Boolean status) {
         String returnValue = "true";
-        userRepository.updateUserEmailVerificationStatus(status, userId);
+//        userRepository.updateUserEmailVerificationStatus(status, userId);
+        userRepository.updateUserEntityEmailVerificationStatus(status, userId);
 
         return returnValue;
     }

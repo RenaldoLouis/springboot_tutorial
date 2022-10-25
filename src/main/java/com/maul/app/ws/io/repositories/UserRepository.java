@@ -1,5 +1,7 @@
 package com.maul.app.ws.io.repositories;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -18,9 +20,6 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 
     UserEntity findByUserId(String userId);
 
-    @Query("select user from UserEntity user where user.userId =:userId")
-    UserEntity findUserEntityByUserId(@Param(value = "userId") String userId);
-
     UserEntity findUserByEmailVerificationToken(String token);
 
     @Query(value = "select * from Users u where u.EMAIL_VERIFICATION_STATUS = 'true'", countQuery = "select count(*) from Users u where u.EMAIL_VERIFICATION_STATUS = 'true'", nativeQuery = true)
@@ -37,8 +36,21 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 
     @Transactional // to prevent error usually put in rest controller and the service class
     @Modifying // needed when change database with update
-    @Query(value = "update Users set EMAIL_VERIFICATION_STATUS=:emailVerificationStatus where user_id=:userId", nativeQuery = true)
+    @Query(value = "UPDATE Users set EMAIL_VERIFICATION_STATUS=:emailVerificationStatus where user_id=:userId", nativeQuery = true)
     void updateUserEmailVerificationStatus(@Param("emailVerificationStatus") boolean emailVerificationStatus,
+            @Param("userId") String userId);
+
+    // JPLQuery Example
+    @Query("select user from UserEntity user where user.userId =:userId")
+    UserEntity findUserEntityByUserId(@Param(value = "userId") String userId);
+
+    @Query("select user.firstName,user.lastName from UserEntity user where user.userId =:userId")
+    List<Object[]> getUserEntityFullNameById(@Param(value = "userId") String userId);
+
+    @Transactional // to prevent error usually put in rest controller and the service class
+    @Modifying // needed when change database with update
+    @Query(value = "UPDATE UserEntity set emailVerificationStatus=:emailVerificationStatus where user_id=:userId")
+    void updateUserEntityEmailVerificationStatus(@Param("emailVerificationStatus") boolean emailVerificationStatus,
             @Param("userId") String userId);
 
 }
