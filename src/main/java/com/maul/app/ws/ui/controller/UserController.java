@@ -4,6 +4,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +29,7 @@ import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.PasswordResetModel;
 import com.maul.app.ws.ui.model.request.PasswordResetRequestModel;
+import com.maul.app.ws.ui.model.request.UpdateUserEmailStatus;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.maul.app.ws.ui.model.response.AddressesRest;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
@@ -191,6 +194,24 @@ public class UserController {
 
         if (operationResult == "true") {
             returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        }
+
+        return returnValue;
+    }
+
+    @Transactional
+    @PutMapping(path = "/updateUserEmailStatus")
+    public OperationStatusModel updateUserEmailStatus(@RequestBody UpdateUserEmailStatus updateUserEmailStatus) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+
+        String operationResult = userService.updateUserEmailStatus(updateUserEmailStatus.getUserId(),
+                updateUserEmailStatus.getStatus());
+
+        returnValue.setOperationName(RequestOperationName.CONFIRM_USER.name());
+        returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+
+        if (operationResult == "true") {
+            returnValue.setOperationResult(RequestOperationStatus.UPDATED.name());
         }
 
         return returnValue;

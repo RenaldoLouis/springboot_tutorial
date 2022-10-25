@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.RuntimeErrorException;
+import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -130,6 +131,15 @@ public class UserServiceImpl implements UserService {
         return returnValue;
     }
 
+    @Transactional
+    @Override
+    public String updateUserEmailStatus(String userId, Boolean status) {
+        String returnValue = "true";
+        userRepository.updateUserEmailVerificationStatus(status, userId);
+
+        return returnValue;
+    }
+
     @Override
     public UserDto updateUser(String userId, UserDto user) {
         UserDto returnValue = new UserDto();
@@ -190,7 +200,7 @@ public class UserServiceImpl implements UserService {
 
         org.springframework.data.domain.Pageable pageableRequest = PageRequest.of(page, limit);
 
-        Page<UserEntity> usersPage = userRepository.findUserByFirstName(pageableRequest, firstName);
+        Page<UserEntity> usersPage = userRepository.findUserByFirstName(pageableRequest, firstName.toLowerCase());
 
         List<UserEntity> users = usersPage.getContent();
 

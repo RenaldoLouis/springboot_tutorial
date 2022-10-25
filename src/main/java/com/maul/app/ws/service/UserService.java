@@ -18,6 +18,8 @@ public interface UserService extends UserDetailsService {
 
     String confirmUser(String userId);
 
+    String updateUserEmailStatus(String userId, Boolean status);
+
     UserDto updateUser(String userId, UserDto user);
 
     void deleteUser(String userId);
