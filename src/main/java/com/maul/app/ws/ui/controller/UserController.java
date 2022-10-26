@@ -2,6 +2,7 @@ package com.maul.app.ws.ui.controller;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -10,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -144,7 +146,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/{userId}/addresses/{addressId}")
-    public AddressesRest getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
+    public EntityModel<AddressesRest> getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
         AddressDTO addressDTO = addressService.getAddress(addressId);
 
         ModelMapper modelMapper = new ModelMapper();
@@ -156,10 +158,11 @@ public class UserController {
                 .withRel("user");
         Link selfLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).slash("addresses").slash(addressId)
                 .withSelfRel();
-        returnValue.add(userLink);
-        returnValue.add(userAddressesLink);
-        returnValue.add(selfLink);
-        return returnValue;
+//        returnValue.add(userLink);
+//        returnValue.add(userAddressesLink);
+//        returnValue.add(selfLink);
+
+        return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressesLink, selfLink));
     }
 
     @PostMapping(path = "/passwordResetRequest")
