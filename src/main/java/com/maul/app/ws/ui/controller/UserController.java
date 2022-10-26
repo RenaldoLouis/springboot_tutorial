@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -128,7 +129,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}/addresses")
-    public List<AddressesRest> getUserAddresses(@PathVariable String id) {
+    public CollectionModel<AddressesRest> getUserAddresses(@PathVariable String id) {
         List<AddressesRest> returnValue = new ArrayList<>();
 
         List<AddressDTO> addressDTO = addressService.getAddresses(id);
@@ -140,9 +141,23 @@ public class UserController {
             Type listType = new TypeToken<List<AddressesRest>>() {
             }.getType();
             returnValue = modelMapper.map(addressDTO, listType);
+
+            for (AddressesRest addressRest : returnValue) {
+                Link selfLink = WebMvcLinkBuilder
+                        .linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+                                .getUserAddress(id, addressRest.getAddressId()))
+                        .withSelfRel();
+                addressRest.add(selfLink);
+            }
         }
 
-        return returnValue;
+        Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(id).withRel("user");
+
+        Link selfLink = WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(id))
+                .withSelfRel();
+
+        return CollectionModel.of(returnValue, userLink, selfLink);
     }
 
     @GetMapping(path = "/{userId}/addresses/{addressId}")
@@ -152,22 +167,13 @@ public class UserController {
         ModelMapper modelMapper = new ModelMapper();
         AddressesRest returnValue = modelMapper.map(addressDTO, AddressesRest.class);
 
-        // http://localhost:8080/users/<userId>/addresses/{addressId}
         Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
         Link userAddressesLink = WebMvcLinkBuilder
                 .linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(userId))
-//                .slash(userId)
-//                .slash("addresses")
                 .withRel("addresses");
         Link selfLink = WebMvcLinkBuilder
                 .linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddress(userId, addressId))
-//                .slash(userId)
-//                .slash("addresses")
-//                .slash(addressId)
                 .withSelfRel();
-//        returnValue.add(userLink);
-//        returnValue.add(userAddressesLink);
-//        returnValue.add(selfLink);
 
         return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressesLink, selfLink));
     }
