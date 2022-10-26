@@ -47,7 +47,8 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
     @Query("select user.firstName,user.lastName from UserEntity user where user.userId =:userId")
     List<Object[]> getUserEntityFullNameById(@Param(value = "userId") String userId);
 
-    @Transactional // to prevent error usually put in rest controller and the service class
+    @Transactional // to prevent error usually put in rest controller and the service class, so it
+                   // can rollback changes if error happen
     @Modifying // needed when change database with update
     @Query(value = "UPDATE UserEntity set emailVerificationStatus=:emailVerificationStatus where user_id=:userId")
     void updateUserEntityEmailVerificationStatus(@Param("emailVerificationStatus") boolean emailVerificationStatus,
