@@ -15,7 +15,6 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,9 +43,9 @@ import com.maul.app.ws.ui.model.response.RequestOperationStatus;
 import com.maul.app.ws.ui.model.response.ResetPasswordRequestRest;
 import com.maul.app.ws.ui.model.response.UserRest;
 
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/users")
+//@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
