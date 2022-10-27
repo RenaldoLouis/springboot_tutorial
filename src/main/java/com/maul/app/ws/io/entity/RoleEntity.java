@@ -53,6 +53,13 @@ public class RoleEntity implements Serializable {
         return users;
     }
 
+    public RoleEntity() {
+    };
+
+    public RoleEntity(String name) {
+        this.name = name;
+    }
+
     public void setUsers(Collection<UserEntity> users) {
         this.users = users;
     }
