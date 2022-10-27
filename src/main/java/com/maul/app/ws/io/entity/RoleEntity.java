@@ -57,4 +57,12 @@ public class RoleEntity implements Serializable {
         this.users = users;
     }
 
+    public Collection<AuthorityEntity> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Collection<AuthorityEntity> authorities) {
+        this.authorities = authorities;
+    }
+
 }
