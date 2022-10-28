@@ -48,13 +48,19 @@ public class InitialUserSetup {
         RoleEntity roleUser = createRole("ROLE_USER", Arrays.asList(readAuthority, writeAuthority));
         RoleEntity roleAdmin = createRole("ROLE_ADMIN", Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
 
+        UserEntity existAdmin = userRepository.findByEmail("Joy123@springboot.com");
+
+        if (existAdmin != null) {
+            return;
+        }
+
         if (roleAdmin == null)
             return;
 
         UserEntity adminUser = new UserEntity();
         adminUser.setFirstName("Renald");
         adminUser.setLastName("Louis");
-        adminUser.setEmail("Joy@springboot.com");
+        adminUser.setEmail("Joy123@springboot.com");
         adminUser.setEmailVerificationStatus(true);
         adminUser.setUserId(utils.generateUserId(30));
         adminUser.setEncryptedPassowrd(bCryptPasswordEncoder.encode("12345678"));

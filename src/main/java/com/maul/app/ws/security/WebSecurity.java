@@ -15,16 +15,20 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import com.maul.app.ws.io.repositories.UserRepository;
 import com.maul.app.ws.service.UserService;
 
 @EnableWebSecurity
 public class WebSecurity {
     private final UserService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
 
-    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder,
+            UserRepository userRepository) {
         this.userDetailsService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -46,7 +50,8 @@ public class WebSecurity {
                 .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
                 .permitAll().anyRequest().authenticated().and()
                 .addFilter(getAuthenticationFilter(authenticationManager))
-                .addFilter(new AuthorizationFilter(authenticationManager)).sessionManagement()
+                .addFilter(new AuthorizationFilter(authenticationManager, userRepository))
+                .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
