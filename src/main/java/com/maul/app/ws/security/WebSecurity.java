@@ -49,7 +49,9 @@ public class WebSecurity {
                 .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_REQUEST_URL)
                 .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
                 .permitAll()
-                .antMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("DELETE_AUTHORITY") // this part is important
+                                                                                              // for
+                // authorization actions
                 .anyRequest().authenticated().and()
                 .addFilter(getAuthenticationFilter(authenticationManager))
                 .addFilter(new AuthorizationFilter(authenticationManager, userRepository))
