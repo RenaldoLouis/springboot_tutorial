@@ -15,9 +15,11 @@ import com.maul.app.ws.io.entity.UserEntity;
 public class UserPrincipal implements UserDetails {
 
     UserEntity userEntity;
+    private String userId;
 
     public UserPrincipal(UserEntity userEntity) {
         this.userEntity = userEntity;
+        this.userId = userEntity.getUserId();
     }
 
     @Override
@@ -72,6 +74,14 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.userEntity.getEmailVerificationStatus();
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
 }
