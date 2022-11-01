@@ -15,6 +15,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,6 +73,8 @@ public class UserController {
         return returnedValue;
     }
 
+    @PostAuthorize("returnObject.userId == principal.userId") // principal itu currently loggedin User, karena post itu
+                                                              // bisa akses hasil balikannya
     @GetMapping("/{id}")
     public UserRest getUser(@PathVariable String id) {
         UserRest returnValue = new UserRest();
@@ -118,7 +121,6 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or #id == principal.userId")
 //    @PreAuthorize("hasAuthority('DELETE_AUTHORITY')")
-//    @PostAuthorize
 //    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     public OperationStatusModel deleteUser(@PathVariable String id) {
