@@ -17,6 +17,7 @@ import com.maul.app.ws.io.entity.UserEntity;
 import com.maul.app.ws.io.repositories.AuthorityRepository;
 import com.maul.app.ws.io.repositories.RoleRepository;
 import com.maul.app.ws.io.repositories.UserRepository;
+import com.maul.app.ws.shared.Roles;
 import com.maul.app.ws.shared.Utils;
 
 @Component
@@ -45,8 +46,9 @@ public class InitialUserSetup {
         AuthorityEntity writeAuthority = createAuthority("WRITE_AUTHORITY");
         AuthorityEntity deleteAuthority = createAuthority("DELETE_AUTHORITY");
 
-        RoleEntity roleUser = createRole("ROLE_USER", Arrays.asList(readAuthority, writeAuthority));
-        RoleEntity roleAdmin = createRole("ROLE_ADMIN", Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
+        createRole(Roles.ROLE_USER.name(), Arrays.asList(readAuthority, writeAuthority));
+        RoleEntity roleAdmin = createRole(Roles.ROLE_ADMIN.name(),
+                Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
 
         UserEntity existAdmin = userRepository.findByEmail("Joy123@springboot.com");
 

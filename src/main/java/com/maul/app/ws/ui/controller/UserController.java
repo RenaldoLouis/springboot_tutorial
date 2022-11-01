@@ -3,6 +3,7 @@ package com.maul.app.ws.ui.controller;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.maul.app.ws.exceptions.UserServiceException;
 import com.maul.app.ws.service.AddressService;
 import com.maul.app.ws.service.UserService;
+import com.maul.app.ws.shared.Roles;
 import com.maul.app.ws.shared.dto.AddressDTO;
 import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
@@ -73,8 +75,9 @@ public class UserController {
         return returnedValue;
     }
 
-    @PostAuthorize("returnObject.userId == principal.userId") // principal itu currently loggedin User, karena post itu
-                                                              // bisa akses hasil balikannya
+    @PostAuthorize("hasRole('ADMIN') or returnObject.userId == principal.userId") // principal itu currently loggedin
+                                                                                  // User, karena post itu
+    // bisa akses hasil balikannya
     @GetMapping("/{id}")
     public UserRest getUser(@PathVariable String id) {
         UserRest returnValue = new UserRest();
@@ -99,6 +102,7 @@ public class UserController {
         // Deep Copy (should use this if theres object in object
         ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(userDetails, UserDto.class);
+        userDto.setRoles(new HashSet<>(Arrays.asList(Roles.ROLE_USER.name())));
 
         UserDto createdUser = userService.createUser(userDto);
         returnValue = modelMapper.map(createdUser, UserRest.class);

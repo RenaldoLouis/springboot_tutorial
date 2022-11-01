@@ -1,6 +1,8 @@
 package com.maul.app.ws.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.management.RuntimeErrorException;
@@ -19,9 +21,11 @@ import org.springframework.stereotype.Service;
 import com.maul.app.ws.exceptions.UserServiceException;
 import com.maul.app.ws.io.entity.AddressEntity;
 import com.maul.app.ws.io.entity.PasswordResetTokenEntity;
+import com.maul.app.ws.io.entity.RoleEntity;
 import com.maul.app.ws.io.entity.UserEntity;
 import com.maul.app.ws.io.repositories.AddressRepository;
 import com.maul.app.ws.io.repositories.PasswordResetTokenRepository;
+import com.maul.app.ws.io.repositories.RoleRepository;
 import com.maul.app.ws.io.repositories.UserRepository;
 import com.maul.app.ws.security.UserPrincipal;
 import com.maul.app.ws.service.UserService;
@@ -36,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     AddressRepository addressRepository;
@@ -70,6 +77,17 @@ public class UserServiceImpl implements UserService {
         String publicUserId = utils.generateUserId(30);
         userEntity.setUserId(publicUserId);
         userEntity.setEncryptedPassowrd(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        // Set roles
+        Collection<RoleEntity> roleEntities = new HashSet<>();
+        for (String role : user.getRoles()) {
+            RoleEntity roleEntity = roleRepository.findByName(role);
+            if (roleEntity != null) {
+                roleEntities.add(roleEntity);
+            }
+        }
+
+        userEntity.setRoles(roleEntities);
 
         UserEntity storedUserDetails = userRepository.save(userEntity);
 
