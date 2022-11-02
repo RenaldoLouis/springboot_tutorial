@@ -13,6 +13,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -48,6 +50,9 @@ public class UserServiceImpl implements UserService {
     AddressRepository addressRepository;
 
     @Autowired
+    JavaMailSender javaMailSender;
+
+    @Autowired
     Utils utils;
 
     @Autowired
@@ -55,6 +60,31 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     PasswordResetTokenRepository passwordResetTokenRepository;
+
+    // This address must be verified with Amazon SES.
+    final String FROM = "vayneaurelius5@gmail.com";
+
+    final String TO = "renaldolouis555@gmail.com";
+
+    // The subject line for the email.
+    final String SUBJECT = "One last step to complete your registration with PhotoApp";
+
+    final String PASSWORD_RESET_SUBJECT = "Password reset request";
+
+    // The HTML body for the email.
+    final String HTMLBODY = "<h1>Please verify your email address</h1>"
+            + "<p>Thank you for registering with our mobile app. To complete registration process and be able to log in,"
+            + " click on the following link: "
+            + "<a href='localhost:8080/verification-service/email-verification.html?token=$tokenValue'>"
+            + "Final step to complete your registration" + "</a><br/><br/>"
+            + "Thank you! And we are waiting for you inside!";
+
+    // The email body for recipients with non-HTML email clients.
+    final String TEXTBODY = "Please verify your email address. "
+            + "Thank you for registering with our mobile app. To complete registration process and be able to log in,"
+            + " open then the following URL in your browser window: "
+            + " http://localhost:8080/verification-service/email-verification.html?token=$tokenValue"
+            + " Thank you! And we are waiting for you inside!";
 
     @Override
     public UserDto createUser(UserDto user) {
@@ -94,6 +124,31 @@ public class UserServiceImpl implements UserService {
 
 //      BeanUtils.copyProperties(storedUserDetails, returnValue);
         UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
+
+        // Send an email message to user to verify their email address
+//        new SES().verifyEmail(returnValue);
+
+        String htmlBodyWithToken = HTMLBODY.replace("$tokenValue", returnValue.getEmailVerificationToken());
+        String textBodyWithToken = TEXTBODY.replace("$tokenValue", returnValue.getEmailVerificationToken());
+
+        try {
+            // Creating a simple mail message
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+
+            // Setting up necessary details
+            mailMessage.setFrom(FROM);
+            mailMessage.setTo(TO);
+            mailMessage.setText(textBodyWithToken);
+            mailMessage.setSubject(SUBJECT);
+
+            // Sending the mail
+//            javaMailSender.send(mailMessage);
+            javaMailSender.send(mailMessage);
+            System.out.println("Email Sent!");
+        } catch (Exception e) {
+            System.out.println(e);
+
+        }
 
         return returnValue;
     }
