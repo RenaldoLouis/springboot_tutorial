@@ -46,7 +46,12 @@ public class UserEntity implements Serializable {
     @Column(nullable = false)
     private Boolean emailVerificationStatus = false;
 
-    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL) // this cascade mean it should be gone after use(?)
+    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL) // using this Cascade should automatically add data
+                                                                    // to
+                                                                    // addresses
+                                                                    // table when create User
+                                                                    // and one user can have many addresses therefore
+                                                                    // OneToMany
     private List<AddressEntity> addresses;
 
     @ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER) // so when we need data from userRole it

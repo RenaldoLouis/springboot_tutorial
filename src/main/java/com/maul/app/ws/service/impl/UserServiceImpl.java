@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(user.getEmail()) != null)
             throw new RuntimeErrorException(null, "Record Already exist");
 
+        // for setting the address when creating user
         for (int i = 0; i < user.getAddresses().size(); i++) {
             AddressDTO address = user.getAddresses().get(i);
             address.setUserDetails(user);
