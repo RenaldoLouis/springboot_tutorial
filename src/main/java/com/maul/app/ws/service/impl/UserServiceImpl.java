@@ -35,6 +35,7 @@ import com.maul.app.ws.shared.Utils;
 import com.maul.app.ws.shared.dto.AddressDTO;
 import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
+import com.maul.app.ws.ui.model.request.tempObject;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
 
 @Service
@@ -61,7 +62,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     PasswordResetTokenRepository passwordResetTokenRepository;
 
-    // This address must be verified with Amazon SES.
     final String FROM = "vayneaurelius5@gmail.com";
 
     final String TO = "renaldolouis555@gmail.com";
@@ -82,9 +82,14 @@ public class UserServiceImpl implements UserService {
     // The email body for recipients with non-HTML email clients.
     final String TEXTBODY = "Please verify your email address. "
             + "Thank you for registering with our Website. To complete registration process and be able to log in,"
-            + " open then the following URL in your browser window: "
-            + " http://localhost:3000/verify?token=$tokenValue"
-            + " Thank you! And we are waiting for you inside!";
+            + " open then the following URL in your browser window: ";
+//            + " http://localhost:3000/verify?token=$tokenValue";
+    final String VERIFYLINK = " http://localhost:3000/verify?";
+    final String VERIFYLINKWITHPARAM = " http://localhost:3000/verify?token=$id&name=$name";
+    final String ENCRYPTEDPARAM = "token=$tokenValue";
+    final String ENCRYPTEDPARAMID = "token=$id&name=$name";
+
+    final String secretKey = "secrete";
 
     @Override
     public UserDto createUser(UserDto user) {
@@ -127,10 +132,16 @@ public class UserServiceImpl implements UserService {
         UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 
         // Send an email message to user to verify their email address
-//        new SES().verifyEmail(returnValue);
 
-        String htmlBodyWithToken = HTMLBODY.replace("$tokenValue", returnValue.getEmailVerificationToken());
-        String textBodyWithToken = TEXTBODY.replace("$tokenValue", returnValue.getEmailVerificationToken());
+        tempObject temp = new tempObject(1, returnValue.getEmail(), returnValue.getEmailVerificationToken());
+        String textString = temp.toString();
+
+//        byte[] bytes = textString.getBytes();
+//        String StringencodedString = new String(Base64.getUrlEncoder().encode(bytes));
+
+        String encryptedString = utils.encrypt(textString, secretKey);
+
+        String textMessage = TEXTBODY.concat(VERIFYLINK).concat(encryptedString);
 
         try {
             // Creating a simple mail message
@@ -139,7 +150,7 @@ public class UserServiceImpl implements UserService {
             // Setting up necessary details
             mailMessage.setFrom(FROM);
             mailMessage.setTo(TO);
-            mailMessage.setText(textBodyWithToken);
+            mailMessage.setText(textMessage);
             mailMessage.setSubject(SUBJECT);
 
             // Sending the mail

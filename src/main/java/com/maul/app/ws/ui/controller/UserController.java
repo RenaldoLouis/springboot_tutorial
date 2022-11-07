@@ -32,6 +32,7 @@ import com.maul.app.ws.exceptions.UserServiceException;
 import com.maul.app.ws.service.AddressService;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.Roles;
+import com.maul.app.ws.shared.Utils;
 import com.maul.app.ws.shared.dto.AddressDTO;
 import com.maul.app.ws.shared.dto.PasswordResetRequestDTO;
 import com.maul.app.ws.shared.dto.UserDto;
@@ -39,6 +40,7 @@ import com.maul.app.ws.ui.model.request.PasswordResetModel;
 import com.maul.app.ws.ui.model.request.PasswordResetRequestModel;
 import com.maul.app.ws.ui.model.request.UpdateUserEmailStatus;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
+import com.maul.app.ws.ui.model.request.tempObject;
 import com.maul.app.ws.ui.model.response.AddressesRest;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
 import com.maul.app.ws.ui.model.response.OperationStatusModel;
@@ -57,6 +59,9 @@ public class UserController {
 
     @Autowired
     AddressService addressService;
+
+    @Autowired
+    Utils utils;
 
     @GetMapping()
     public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -300,10 +305,17 @@ public class UserController {
     @GetMapping(path = "/emailVerification")
     public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
         OperationStatusModel returnValue = new OperationStatusModel();
+        final String secretKey = "secrete";
+
+//        String decoded = new String(Base64.getUrlDecoder().decode(token));
+
+        String decryptedString = utils.decrypt(token, secretKey);
+
+        tempObject temp = new tempObject(decryptedString);
 
         returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
 
-        boolean isVerified = userService.verifyEmailToken(token);
+        boolean isVerified = userService.verifyEmailToken(temp.getToken());
 
         if (isVerified) {
             returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
