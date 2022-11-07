@@ -42,6 +42,7 @@ import com.maul.app.ws.ui.model.request.UpdateUserEmailStatus;
 import com.maul.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.maul.app.ws.ui.model.request.tempObject;
 import com.maul.app.ws.ui.model.response.AddressesRest;
+import com.maul.app.ws.ui.model.response.EmailVerificationResponse;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
 import com.maul.app.ws.ui.model.response.OperationStatusModel;
 import com.maul.app.ws.ui.model.response.RequestOperationName;
@@ -303,8 +304,8 @@ public class UserController {
     }
 
     @GetMapping(path = "/emailVerification")
-    public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
-        OperationStatusModel returnValue = new OperationStatusModel();
+    public EmailVerificationResponse verifyEmailToken(@RequestParam(value = "token") String token) {
+        EmailVerificationResponse returnValue = new EmailVerificationResponse();
         final String secretKey = "secrete";
 
 //        String decoded = new String(Base64.getUrlDecoder().decode(token));
@@ -313,12 +314,11 @@ public class UserController {
 
         tempObject temp = new tempObject(decryptedString);
 
-        returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
-
         boolean isVerified = userService.verifyEmailToken(temp.getToken());
 
         if (isVerified) {
-            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+            returnValue.setId(temp.getId());
+            returnValue.setName(temp.getName());
         } else {
             throw new UserServiceException(ErrorMessages.EMAIL_ADDRESS_NOT_VERIFIED.getErrorMessage());
         }
