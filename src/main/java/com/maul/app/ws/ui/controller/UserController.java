@@ -304,8 +304,8 @@ public class UserController {
     }
 
     @GetMapping(path = "/emailVerification")
-    public EmailVerificationResponse verifyEmailToken(@RequestParam(value = "token") String token) {
-        EmailVerificationResponse returnValue = new EmailVerificationResponse();
+    public List<EmailVerificationResponse> verifyEmailToken(@RequestParam(value = "token") String token) {
+        List<EmailVerificationResponse> returnValue = new ArrayList<>();
         final String secretKey = "secrete";
 
 //        String decoded = new String(Base64.getUrlDecoder().decode(token));
@@ -317,8 +317,10 @@ public class UserController {
         boolean isVerified = userService.verifyEmailToken(temp.getToken());
 
         if (isVerified) {
-            returnValue.setId(temp.getId());
-            returnValue.setName(temp.getName());
+            EmailVerificationResponse emailVerificationResponseModel = new EmailVerificationResponse();
+            emailVerificationResponseModel.setId(temp.getId());
+            emailVerificationResponseModel.setName(temp.getName());
+            returnValue.add(emailVerificationResponseModel);
         } else {
             throw new UserServiceException(ErrorMessages.EMAIL_ADDRESS_NOT_VERIFIED.getErrorMessage());
         }
