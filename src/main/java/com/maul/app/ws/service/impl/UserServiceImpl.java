@@ -71,23 +71,12 @@ public class UserServiceImpl implements UserService {
 
     final String PASSWORD_RESET_SUBJECT = "Password reset request";
 
-    // The HTML body for the email.
-    final String HTMLBODY = "<h1>Please verify your email address</h1>"
-            + "<p>Thank you for registering with our Website. To complete registration process and be able to log in,"
-            + " click on the following link: "
-            + "<a href='http://localhost:3000/verify?token=$tokenValue'>"
-            + "Final step to complete your registration" + "</a><br/><br/>"
-            + "Thank you! And we are waiting for you inside!";
-
     // The email body for recipients with non-HTML email clients.
     final String TEXTBODY = "Please verify your email address. "
             + "Thank you for registering with our Website. To complete registration process and be able to log in,"
             + " open then the following URL in your browser window: ";
 //            + " http://localhost:3000/verify?token=$tokenValue";
-    final String VERIFYLINK = " http://localhost:3000/verify?";
-    final String VERIFYLINKWITHPARAM = " http://localhost:3000/verify?token=$id&name=$name";
-    final String ENCRYPTEDPARAM = "token=$tokenValue";
-    final String ENCRYPTEDPARAMID = "token=$id&name=$name";
+    final String VERIFYLINK = " https://eta.commsult.dev/verify?";
 
     final String secretKey = "secrete";
 
@@ -133,7 +122,7 @@ public class UserServiceImpl implements UserService {
 
         // Send an email message to user to verify their email address
 
-        tempObject temp = new tempObject(1, returnValue.getEmail(), returnValue.getEmailVerificationToken());
+        tempObject temp = new tempObject(7, returnValue.getEmail(), returnValue.getEmailVerificationToken());
         String textString = temp.toString();
 
 //        byte[] bytes = textString.getBytes();
