@@ -76,7 +76,8 @@ public class UserController {
     }
 
     @PostAuthorize("hasRole('ADMIN') or returnObject.userId == principal.userId") // principal itu currently loggedin
-                                                                                  // User, karena post itu
+                                                                                  // User, and we use returnObject
+                                                                                  // karena post itu
     // bisa akses hasil balikannya
     @GetMapping("/{id}")
     public UserRest getUser(@PathVariable String id) {
@@ -102,7 +103,8 @@ public class UserController {
         // Deep Copy (should use this if theres object in object
         ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(userDetails, UserDto.class);
-        userDto.setRoles(new HashSet<>(Arrays.asList(Roles.ROLE_USER.name())));
+        userDto.setRoles(new HashSet<>(Arrays.asList(Roles.ROLE_USER.name()))); // we use hashSet so the user can't have
+                                                                                // multiple role with the same name
 
         UserDto createdUser = userService.createUser(userDto);
         returnValue = modelMapper.map(createdUser, UserRest.class);
@@ -123,7 +125,11 @@ public class UserController {
         return returnValue;
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #id == principal.userId")
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.userId") // we can use expression here, while on @Secured
+                                                                 // cannot. the or so they can only delete themself if
+                                                                 // not an admin, the left one is the id from parameter,
+                                                                 // the right one of getting the userId we add that by
+                                                                 // our own not built in
 //    @PreAuthorize("hasAuthority('DELETE_AUTHORITY')")
 //    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")

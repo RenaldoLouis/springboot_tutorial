@@ -30,7 +30,8 @@ public class WebSecurity {
             UserRepository userRepository) {
         this.userDetailsService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.userRepository = userRepository;
+        this.userRepository = userRepository; // this added so we can userRepository on AuthorizationFilter file, we put
+                                              // this on line 60
     }
 
     @Bean
@@ -55,6 +56,7 @@ public class WebSecurity {
 //                .antMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("DELETE_AUTHORITY") // this part is important
 //                                                                                              // for
 //                // authorization actions (one of many way for authorization)
+//                .antMatchers(HttpMethod.DELETE, "/users/**").hasAnyRole("ADMIN","SUPER_ADMIN") 
                 .anyRequest().authenticated().and()
                 .addFilter(getAuthenticationFilter(authenticationManager))
                 .addFilter(new AuthorizationFilter(authenticationManager, userRepository))

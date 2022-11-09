@@ -20,7 +20,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 
     public AuthorizationFilter(AuthenticationManager authManager, UserRepository userRepository) {
         super(authManager);
-        this.userRepository = userRepository;
+        this.userRepository = userRepository; // we do this so we can use userRepository on line 58
     }
 
     @Override
