@@ -304,7 +304,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/emailVerification")
-    public List<EmailVerificationResponse> verifyEmailToken(@RequestParam(value = "token") String token) {
+    public List<EmailVerificationResponse> verifyEmailToken(@RequestParam(value = "tokens") String token) {
         List<EmailVerificationResponse> returnValue = new ArrayList<>();
         final String secretKey = "secrete";
 

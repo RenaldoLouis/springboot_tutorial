@@ -122,7 +122,10 @@ public class UserServiceImpl implements UserService {
 
         // Send an email message to user to verify their email address
 
-        tempObject temp = new tempObject(7, returnValue.getEmail(), returnValue.getEmailVerificationToken());
+        int min = 1;
+        int max = 500;
+        int randomIdTemp = (int) (Math.random() * (max - min + 1) + min);
+        tempObject temp = new tempObject(randomIdTemp, returnValue.getEmail(), returnValue.getEmailVerificationToken());
         String textString = temp.toString();
 
 //        byte[] bytes = textString.getBytes();
