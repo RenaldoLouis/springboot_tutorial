@@ -2,6 +2,7 @@ package com.maul.app.ws.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.servlet.FilterChain;
@@ -55,6 +56,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         LoginRest returnValue = new LoginRest();
 
         String userName = ((UserPrincipal) auth.getPrincipal()).getUsername();
+        Collection<String> roles = ((UserPrincipal) auth.getPrincipal())
+                .getRoles();
 
         String token = Jwts.builder().setSubject(userName)
                 .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
@@ -69,6 +72,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         returnValue.setToken(token);
         returnValue.setUserID(userDto.getUserId());
+        returnValue.setRoles(roles);
 
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");

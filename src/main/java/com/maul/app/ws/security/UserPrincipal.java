@@ -1,5 +1,6 @@
 package com.maul.app.ws.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -43,6 +44,21 @@ public class UserPrincipal implements UserDetails {
         });
 
         return authorities;
+    }
+
+    public Collection<String> getRoles() {
+        Collection<String> stringRoles = new ArrayList<>();
+        // Get user Roles
+        Collection<RoleEntity> roles = userEntity.getRoles();
+
+        if (roles == null)
+            return stringRoles;
+
+        roles.forEach((role) -> {
+            stringRoles.add(role.getName());
+        });
+
+        return stringRoles;
     }
 
     @Override
