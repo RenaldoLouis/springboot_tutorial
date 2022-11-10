@@ -100,7 +100,7 @@ public class UserController {
 //		UserDto userDto = new UserDto();
 //		BeanUtils.copyProperties(userDetails, userDto);
 
-        // Deep Copy (should use this if theres object in object
+        // Deep Copy (should use this if theres object in object)
         ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(userDetails, UserDto.class);
         userDto.setRoles(new HashSet<>(Arrays.asList(Roles.ROLE_USER.name()))); // we use hashSet so the user can't have
