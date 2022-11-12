@@ -13,6 +13,10 @@ public class DeliveryDTO implements Serializable {
 
     private Date deliveryTime;
 
+    private int quantity;
+
+    private String buyerId;
+
     public long getId() {
         return id;
     }
@@ -43,5 +47,21 @@ public class DeliveryDTO implements Serializable {
 
     public void setDeliveryTime(Date deliveryTime) {
         this.deliveryTime = deliveryTime;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getBuyerId() {
+        return buyerId;
+    }
+
+    public void setBuyerId(String buyerId) {
+        this.buyerId = buyerId;
     }
 }

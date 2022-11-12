@@ -1,10 +1,15 @@
 package com.maul.app.ws.ui.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maul.app.ws.exceptions.UserServiceException;
@@ -21,7 +26,24 @@ public class DeliveryController {
     @Autowired
     DeliveryService deliveryService;
 
-    @GetMapping("/createDelivery")
+    @GetMapping
+    public List<DeliveryRest> getAllDelivery(@RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
+
+        List<DeliveryRest> returnedValue = new ArrayList<>();
+
+        List<DeliveryDTO> deliveryDTOs = deliveryService.getAllDelivery(page, limit);
+
+        for (DeliveryDTO deliveryDTO : deliveryDTOs) {
+            DeliveryRest deliveryModel = new DeliveryRest();
+            BeanUtils.copyProperties(deliveryDTO, deliveryModel);
+            returnedValue.add(deliveryModel);
+        }
+
+        return returnedValue;
+    }
+
+    @PostMapping("/createDelivery")
     public DeliveryRest createDelivery(@RequestBody CreateDeliveryRequestModel createDeliveryRequestModel) {
         DeliveryRest returnedValue = new DeliveryRest();
 
