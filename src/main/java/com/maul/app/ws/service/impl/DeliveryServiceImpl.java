@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.maul.app.ws.io.entity.CourierEntity;
 import com.maul.app.ws.io.entity.DeliveryEntity;
+import com.maul.app.ws.io.repositories.CourierRepository;
 import com.maul.app.ws.io.repositories.DeliveryRepository;
 import com.maul.app.ws.service.DeliveryService;
 import com.maul.app.ws.shared.Utils;
@@ -23,6 +25,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Autowired
     DeliveryRepository deliveryRepository;
+
+    @Autowired
+    CourierRepository courierRepository;
 
     @Autowired
     Utils utils;
@@ -46,6 +51,22 @@ public class DeliveryServiceImpl implements DeliveryService {
         DeliveryEntity createdDelivery = deliveryRepository.save(deliveryEntity);
 
         BeanUtils.copyProperties(createdDelivery, returnedValue);
+
+        // change 1 driver to not vacant
+
+        List<CourierEntity> listOfCourier = courierRepository.findByVacant(false);
+
+        boolean assignCourier = false;
+
+        for (CourierEntity courierEntity : listOfCourier) {
+            if (courierEntity.isVacant() == false && assignCourier == false) {
+                courierEntity.setVacant(true);
+                courierEntity.setDeliveryCode(publicDeliveryCode);
+                assignCourier = true;
+
+                courierRepository.save(courierEntity);
+            }
+        }
 
         return returnedValue;
     }

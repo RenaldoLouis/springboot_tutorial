@@ -20,6 +20,9 @@ public class CourierEntity {
     @Column(nullable = false)
     private boolean vacant;
 
+    @Column()
+    private String deliveryCode;
+
     public long getId() {
         return id;
     }
@@ -42,5 +45,13 @@ public class CourierEntity {
 
     public void setVacant(boolean vacant) {
         this.vacant = vacant;
+    }
+
+    public String getDeliveryCode() {
+        return deliveryCode;
+    }
+
+    public void setDeliveryCode(String deliveryCode) {
+        this.deliveryCode = deliveryCode;
     }
 }
