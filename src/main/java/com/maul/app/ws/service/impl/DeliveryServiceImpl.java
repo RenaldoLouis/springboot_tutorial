@@ -93,4 +93,21 @@ public class DeliveryServiceImpl implements DeliveryService {
         return returnedValue;
     }
 
+    @Override
+    public String completeDelivery(String deliveryCode) {
+        String returnedvalue = "fail";
+
+        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryCode(deliveryCode);
+
+        if (deliveryEntity != null && deliveryEntity.isCompleted() == false) {
+            deliveryEntity.setCompleted(true);
+            returnedvalue = "success";
+            deliveryRepository.save(deliveryEntity);
+        } else if (deliveryEntity != null && deliveryEntity.isCompleted() == true) {
+            returnedvalue = "alreadyDone";
+        }
+
+        return returnedvalue;
+    }
+
 }

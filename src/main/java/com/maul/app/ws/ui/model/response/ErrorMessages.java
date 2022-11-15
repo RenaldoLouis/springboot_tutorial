@@ -9,7 +9,8 @@ public enum ErrorMessages {
     EMAIL_ADDRESS_NOT_VERIFIED("Email address could not be verified"), TOKEN_EXPIRED("Token Expired"),
     TOKEN_NOT_FOUND("Token Not Found"),
     EMAIL_ADDRESS_NOT_FOUND("Email address could not be found"), CREATE_DELIVERY_FAILED("Create Delivery Failed"),
-    CREATE_COURIER_FAILED("Create Courier Failed");
+    CREATE_COURIER_FAILED("Create Courier Failed"), COMPLETE_DELIVERY_FAILED("Complete Delivery Failed"),
+    DELIVERY_ALREADY_DONE("Delivery Already Done");
 
     private String errorMessage;
 

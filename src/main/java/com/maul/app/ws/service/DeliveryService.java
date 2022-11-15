@@ -10,4 +10,6 @@ public interface DeliveryService {
     DeliveryDTO createDelivery(CreateDeliveryRequestModel createDeliveryRequestModel);
 
     List<DeliveryDTO> getAllDelivery(int page, int limit);
+
+    String completeDelivery(String deliveryCode);
 }
