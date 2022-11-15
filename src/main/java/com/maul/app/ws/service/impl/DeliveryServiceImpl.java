@@ -107,6 +107,13 @@ public class DeliveryServiceImpl implements DeliveryService {
             returnedvalue = "alreadyDone";
         }
 
+        CourierEntity courierEntity = courierRepository.findByDeliveryCode(deliveryCode);
+
+        if (courierEntity != null) {
+            courierEntity.setOccupied(false);
+            courierRepository.save(courierEntity);
+        }
+
         return returnedvalue;
     }
 

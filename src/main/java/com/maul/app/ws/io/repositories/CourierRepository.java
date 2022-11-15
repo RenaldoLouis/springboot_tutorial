@@ -9,4 +9,6 @@ import com.maul.app.ws.io.entity.CourierEntity;
 public interface CourierRepository extends PagingAndSortingRepository<CourierEntity, Long> {
     List<CourierEntity> findByOccupied(Boolean vacant);
 
+    CourierEntity findByDeliveryCode(String deliveryCode);
+
 }
