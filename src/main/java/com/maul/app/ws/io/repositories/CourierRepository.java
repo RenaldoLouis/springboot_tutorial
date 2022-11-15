@@ -7,6 +7,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.maul.app.ws.io.entity.CourierEntity;
 
 public interface CourierRepository extends PagingAndSortingRepository<CourierEntity, Long> {
-    List<CourierEntity> findByVacant(Boolean vacant);
+    List<CourierEntity> findByOccupied(Boolean vacant);
 
 }

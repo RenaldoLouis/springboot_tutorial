@@ -22,7 +22,7 @@ public class CourierServiceImpl implements CourierService {
         CourierEntity courierEntity = new CourierEntity();
 
         courierEntity.setName(name);
-        courierEntity.setVacant(false);
+        courierEntity.setOccupied(false);
 
         CourierEntity createdCourier = courierRepository.save(courierEntity);
 

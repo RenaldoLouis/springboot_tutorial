@@ -18,7 +18,7 @@ public class CourierEntity {
     private String name;
 
     @Column(nullable = false)
-    private boolean vacant;
+    private boolean occupied;
 
     @Column()
     private String deliveryCode;
@@ -39,19 +39,19 @@ public class CourierEntity {
         this.name = name;
     }
 
-    public boolean isVacant() {
-        return vacant;
-    }
-
-    public void setVacant(boolean vacant) {
-        this.vacant = vacant;
-    }
-
     public String getDeliveryCode() {
         return deliveryCode;
     }
 
     public void setDeliveryCode(String deliveryCode) {
         this.deliveryCode = deliveryCode;
+    }
+
+    public boolean isOccupied() {
+        return occupied;
+    }
+
+    public void setOccupied(boolean occupied) {
+        this.occupied = occupied;
     }
 }

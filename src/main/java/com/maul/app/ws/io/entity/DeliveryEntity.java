@@ -31,7 +31,7 @@ public class DeliveryEntity {
     @Column(nullable = false)
     private String buyerId;
 
-    @Column
+    @Column(nullable = false)
     private boolean completed;
 
     public long getId() {

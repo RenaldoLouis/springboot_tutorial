@@ -54,13 +54,13 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         // change 1 driver to not vacant
 
-        List<CourierEntity> listOfCourier = courierRepository.findByVacant(false);
+        List<CourierEntity> listOfCourier = courierRepository.findByOccupied(false);
 
         boolean assignCourier = false;
 
         for (CourierEntity courierEntity : listOfCourier) {
-            if (courierEntity.isVacant() == false && assignCourier == false) {
-                courierEntity.setVacant(true);
+            if (courierEntity.isOccupied() == false && assignCourier == false) {
+                courierEntity.setOccupied(true);
                 courierEntity.setDeliveryCode(publicDeliveryCode);
                 assignCourier = true;
 
