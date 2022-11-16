@@ -111,6 +111,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         if (courierEntity != null) {
             courierEntity.setOccupied(false);
+            courierEntity.setDeliveryCode(null);
             courierRepository.save(courierEntity);
         }
 
