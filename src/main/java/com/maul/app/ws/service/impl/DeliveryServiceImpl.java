@@ -52,7 +52,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         BeanUtils.copyProperties(createdDelivery, returnedValue);
 
-        // change 1 driver to not vacant
+        // change 1 courier to not vacant
 
         List<CourierEntity> listOfCourier = courierRepository.findByOccupied(false);
 
@@ -64,9 +64,12 @@ public class DeliveryServiceImpl implements DeliveryService {
                 courierEntity.setDeliveryCode(publicDeliveryCode);
                 assignCourier = true;
 
+                deliveryEntity.setCourier(courierEntity);
                 courierRepository.save(courierEntity);
             }
         }
+
+        // add the relation on joinTable between delivery and courier
 
         return returnedValue;
     }
@@ -113,6 +116,24 @@ public class DeliveryServiceImpl implements DeliveryService {
             courierEntity.setOccupied(false);
             courierEntity.setDeliveryCode(null);
             courierRepository.save(courierEntity);
+        }
+
+        return returnedvalue;
+    }
+
+    @Override
+    public String deleteDelivery(String deliveryCode) {
+        String returnedvalue = "fail";
+
+        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryCode(deliveryCode);
+
+        if (deliveryEntity != null && deliveryEntity.isCompleted() == true) {
+            // baru apus
+            returnedvalue = "success";
+            deliveryRepository.delete(deliveryEntity);
+        } else if (deliveryEntity != null && deliveryEntity.isCompleted() == false) {
+            // the delivery not completed yet
+            returnedvalue = "notDoneYet";
         }
 
         return returnedvalue;

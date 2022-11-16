@@ -12,4 +12,6 @@ public interface DeliveryService {
     List<DeliveryDTO> getAllDelivery(int page, int limit);
 
     String completeDelivery(String deliveryCode);
+
+    String deleteDelivery(String deliveryCode);
 }

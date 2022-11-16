@@ -2,10 +2,15 @@ package com.maul.app.ws.io.entity;
 
 import java.sql.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -33,6 +38,11 @@ public class DeliveryEntity {
 
     @Column(nullable = false)
     private boolean completed;
+
+    @OneToOne(cascade = {
+            CascadeType.PERSIST }, fetch = FetchType.EAGER, targetEntity = com.maul.app.ws.io.entity.CourierEntity.class)
+    @JoinTable(name = "delivery_courier", joinColumns = @JoinColumn(name = "delivery_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "courier_id", referencedColumnName = "id"))
+    private CourierEntity courier;
 
     public long getId() {
         return id;
@@ -88,5 +98,13 @@ public class DeliveryEntity {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public CourierEntity getCourier() {
+        return courier;
+    }
+
+    public void setCourier(CourierEntity courier) {
+        this.courier = courier;
     }
 }

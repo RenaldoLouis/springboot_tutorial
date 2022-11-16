@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,6 +77,26 @@ public class DeliveryController {
             throw new UserServiceException(ErrorMessages.DELIVERY_ALREADY_DONE.getErrorMessage());
         } else {
             throw new UserServiceException(ErrorMessages.COMPLETE_DELIVERY_FAILED.getErrorMessage());
+        }
+
+        return returnedValue;
+    };
+
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.userId")
+    @DeleteMapping("/deleteDelivery/{deliveryCode}")
+    public OperationStatusModel deleteDelivery(@PathVariable String deliveryCode) {
+        OperationStatusModel returnedValue = new OperationStatusModel();
+
+        returnedValue.setOperationName(RequestOperationName.DELETE_DELIVERY.name());
+
+        String isCompleted = deliveryService.deleteDelivery(deliveryCode);
+
+        if (isCompleted == "success") {
+            returnedValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        } else if (isCompleted == "notDoneYet") {
+            throw new UserServiceException(ErrorMessages.DELIVERY_NOT_DONE_YET.getErrorMessage());
+        } else {
+            throw new UserServiceException(ErrorMessages.DELETE_DELIVERY_FAILED.getErrorMessage());
         }
 
         return returnedValue;
