@@ -86,6 +86,7 @@ public class UserPrincipal implements UserDetails {
         return true;
     }
 
+    // this one is to allow user based on the email verification status
     @Override
     public boolean isEnabled() {
         return this.userEntity.getEmailVerificationStatus();

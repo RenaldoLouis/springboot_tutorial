@@ -154,6 +154,8 @@ public class UserServiceImpl implements UserService {
         return returnValue;
     }
 
+    // this loadUserByUsername is springboot method so will be called automatically
+    // on login
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);
