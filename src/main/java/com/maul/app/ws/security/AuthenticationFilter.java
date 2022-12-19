@@ -1,6 +1,8 @@
 package com.maul.app.ws.security;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +24,7 @@ import com.maul.app.ws.exceptions.UserServiceException;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.UserLoginRequestModel;
+import com.maul.app.ws.ui.model.response.ErrorMessage;
 import com.maul.app.ws.ui.model.response.ErrorMessages;
 import com.maul.app.ws.ui.model.response.LoginRest;
 
@@ -77,6 +81,32 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         res.getWriter().write(new ObjectMapper().writeValueAsString(returnValue));
+
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res,
+            AuthenticationException failed) {
+
+        Date date = new Date();
+        String strDateFormat = "hh:mm:ss a";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String formattedDate = dateFormat.format(date);
+
+        ErrorMessage errorMessages = new ErrorMessage();
+
+        errorMessages.setMessage("Email Not Verified Yet");
+        errorMessages.setStatus(400);
+        errorMessages.setTimestamp(date);
+
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+        res.setStatus(400);
+        try {
+            res.getWriter().write(new ObjectMapper().writeValueAsString(errorMessages));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
