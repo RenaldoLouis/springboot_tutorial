@@ -21,16 +21,16 @@ tags:
     description: Find out more about our store
     url: http://swagger.io
 paths:
-  /user/{username}:
+  /users/{id}:
     get:
       tags:
-      - user
-      summary: Get user by user name
-      operationId: getUserByName
+      - users
+      summary: Get user by id
+      operationId: getUserByid
       parameters:
-      - name: username
+      - name: id
         in: path
-        description: 'The name that needs to be fetched. '
+        description: 'The user that needs to be fetched. '
         required: true
         schema:
           type: string
@@ -49,17 +49,14 @@ components:
     User:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-        username:
+        userId:
           type: string
         firstName:
           type: string
+        lastName:
+          type: string
         userStatus:
-          type: integer
-          description: User Status
-          format: int32
+          type: String
   securitySchemes:
     reflectoring_auth:
       type: oauth2

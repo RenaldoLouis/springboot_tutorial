@@ -48,16 +48,17 @@ public class WebSecurity {
         // are not authenthicated
         http
                 .cors().and()
-                .csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
-                .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_REQUEST_URL)
-                .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
-                .permitAll().antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
-                .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.REVERIFY)
-                .permitAll()
-//                .antMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("DELETE_AUTHORITY") // this part is important
-//                                                                                              // for
-//                // authorization actions (one of many way for authorization)
-//                .antMatchers(HttpMethod.DELETE, "/users/**").hasAnyRole("ADMIN","SUPER_ADMIN") 
+                .csrf().disable().authorizeRequests()
+                .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL).permitAll()
+                .antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_REQUEST_URL).permitAll()
+                .antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL).permitAll()
+                .antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL).permitAll()
+                // .antMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("DELETE_AUTHORITY")
+                // // this part is important
+                // // for
+                // // authorization actions (one of many way for authorization)
+                // .antMatchers(HttpMethod.DELETE,
+                // "/users/**").hasAnyRole("ADMIN","SUPER_ADMIN")
                 .anyRequest().authenticated().and()
                 .addFilter(getAuthenticationFilter(authenticationManager))
                 .addFilter(new AuthorizationFilter(authenticationManager, userRepository))
@@ -89,14 +90,15 @@ public class WebSecurity {
     }
 
     // OLD WAY WITH WebSecurityConfigurerAdapter
-//	@Override
-//	protected void configure(HttpSecurity http) throws Exception {
-//		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/maul/createUser").permitAll()
-//				.anyRequest().authenticated();
-//	}
+    // @Override
+    // protected void configure(HttpSecurity http) throws Exception {
+    // http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST,
+    // "/maul/createUser").permitAll()
+    // .anyRequest().authenticated();
+    // }
 
-//	@Override
-//	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-//	}
+    // @Override
+    // public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    // auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+    // }
 }
