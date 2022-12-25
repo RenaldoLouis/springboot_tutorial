@@ -93,7 +93,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res,
             AuthenticationException failed)
             throws org.springframework.security.core.AuthenticationException {
-
+        var failReason = failed.getMessage().toString();
+        var condition = failReason.equals("Bad credentials");
         Date date = new Date();
         String strDateFormat = "hh:mm:ss a";
         DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
@@ -104,16 +105,21 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         try {
             UserEntity userEntity = userRepository.findByEmail(creds.getEmail());
 
-            if (userEntity == null) {
-                errorMessages.setMessage("User not Existed please register first");
+            if (condition) {
+                errorMessages.setMessage("Pleace Check your username or password again");
                 errorMessages.setStatus(400);
                 errorMessages.setTimestamp(date);
             } else {
-                errorMessages.setMessage("Email Not Verified Yet");
-                errorMessages.setStatus(400);
-                errorMessages.setTimestamp(date);
+                if (userEntity == null) {
+                    errorMessages.setMessage("User not Existed please register first");
+                    errorMessages.setStatus(400);
+                    errorMessages.setTimestamp(date);
+                } else {
+                    errorMessages.setMessage("Email Not Verified Yet");
+                    errorMessages.setStatus(400);
+                    errorMessages.setTimestamp(date);
+                }
             }
-
             res.setContentType("application/json");
             res.setCharacterEncoding("UTF-8");
             res.setStatus(400);
