@@ -21,6 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maul.app.ws.SpringApplicationContext;
 import com.maul.app.ws.exceptions.UserServiceException;
+import com.maul.app.ws.io.entity.UserEntity;
+import com.maul.app.ws.io.repositories.UserRepository;
 import com.maul.app.ws.service.UserService;
 import com.maul.app.ws.shared.dto.UserDto;
 import com.maul.app.ws.ui.model.request.UserLoginRequestModel;
@@ -34,16 +36,19 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private UserLoginRequestModel creds;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
             throws org.springframework.security.core.AuthenticationException {
         try {
-            UserLoginRequestModel creds = new ObjectMapper().readValue(req.getInputStream(),
+            creds = new ObjectMapper().readValue(req.getInputStream(),
                     UserLoginRequestModel.class);
 
             return authenticationManager.authenticate(
@@ -86,7 +91,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res,
-            AuthenticationException failed) {
+            AuthenticationException failed)
+            throws org.springframework.security.core.AuthenticationException {
 
         Date date = new Date();
         String strDateFormat = "hh:mm:ss a";
@@ -95,19 +101,29 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         ErrorMessage errorMessages = new ErrorMessage();
 
-        errorMessages.setMessage("Email Not Verified Yet");
-        errorMessages.setStatus(400);
-        errorMessages.setTimestamp(date);
-
-        res.setContentType("application/json");
-        res.setCharacterEncoding("UTF-8");
-        res.setStatus(400);
         try {
+            UserEntity userEntity = userRepository.findByEmail(creds.getEmail());
+
+            if (userEntity == null) {
+                errorMessages.setMessage("User not Existed please register first");
+                errorMessages.setStatus(400);
+                errorMessages.setTimestamp(date);
+            } else {
+                errorMessages.setMessage("Email Not Verified Yet");
+                errorMessages.setStatus(400);
+                errorMessages.setTimestamp(date);
+            }
+
+            res.setContentType("application/json");
+            res.setCharacterEncoding("UTF-8");
+            res.setStatus(400);
+
             res.getWriter().write(new ObjectMapper().writeValueAsString(errorMessages));
-        } catch (IOException e) {
+
+        } catch (Exception e) {
+
             e.printStackTrace();
         }
-
     }
 
 }
