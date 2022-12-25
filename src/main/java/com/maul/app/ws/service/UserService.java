@@ -30,6 +30,8 @@ public interface UserService extends UserDetailsService {
 
     boolean verifyEmailToken(String token);
 
+    boolean reVerify(UserDto user);
+
     PasswordResetRequestDTO requestPasswordReset(String email);
 
     boolean resetPassword(String token, String password);

@@ -52,6 +52,7 @@ public class WebSecurity {
                 .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_REQUEST_URL)
                 .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
                 .permitAll().antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
+                .permitAll().antMatchers(HttpMethod.POST, SecurityConstants.REVERIFY)
                 .permitAll()
 //                .antMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("DELETE_AUTHORITY") // this part is important
 //                                                                                              // for

@@ -154,6 +154,48 @@ public class UserServiceImpl implements UserService {
         return returnValue;
     }
 
+    @Override
+    public boolean reVerify(UserDto user) {
+
+        boolean returnValue = true;
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+
+            UserEntity userEntity = userRepository.findByEmail(user.getEmail());
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(userEntity, userDto);
+
+            var newToken = utils.generateEmailVerificationToken(userDto.getUserId());
+
+            userEntity.setEmailVerificationToken(newToken);
+
+            userRepository.save(userEntity);
+
+            String textBodyWithToken = TEXTBODY.replace("$tokenValue", newToken);
+
+            try {
+                // Creating a simple mail message
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+
+                // Setting up necessary details
+                mailMessage.setFrom(FROM);
+                mailMessage.setTo(TO);
+                mailMessage.setText(textBodyWithToken);
+                mailMessage.setSubject(SUBJECT);
+
+                // Sending the mail
+//                javaMailSender.send(mailMessage);
+                javaMailSender.send(mailMessage);
+                System.out.println("Email Sent!");
+            } catch (Exception e) {
+                returnValue = false;
+                System.out.println(e);
+
+            }
+        }
+
+        return returnValue;
+    }
+
     // this loadUserByUsername is springboot method so will be called automatically
     // on login
     @Override

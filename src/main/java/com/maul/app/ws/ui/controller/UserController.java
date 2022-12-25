@@ -112,6 +112,26 @@ public class UserController {
         return returnValue;
     }
 
+    @PostMapping(path = "/reVerify")
+    public OperationStatusModel reVerify(@RequestBody UserDetailsRequestModel userDetails) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+
+        returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetails, UserDto.class);
+
+        boolean isVerified = userService.reVerify(userDto);
+
+        if (isVerified) {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        } else {
+            throw new UserServiceException(ErrorMessages.EMAIL_ADDRESS_NOT_VERIFIED.getErrorMessage());
+        }
+
+        return returnValue;
+    }
+
     @PutMapping(path = "/{id}")
     public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
         UserRest returnValue = new UserRest();
