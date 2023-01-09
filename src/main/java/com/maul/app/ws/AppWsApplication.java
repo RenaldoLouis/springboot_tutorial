@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import springfox.documentation.spi.schema.EnumTypeDeterminer;
+
 @SpringBootApplication
 public class AppWsApplication extends SpringBootServletInitializer {
 
@@ -31,6 +33,18 @@ public class AppWsApplication extends SpringBootServletInitializer {
     @Bean
     public SpringApplicationContext springApplicationContext() {
         return new SpringApplicationContext();
+    }
+
+    @Bean
+    public EnumTypeDeterminer enumTypeDeterminer() {
+        return new EnumTypeDeterminer() {
+
+            @Override
+            public boolean isEnum(Class<?> arg0) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+        };
     }
 
     @Bean
