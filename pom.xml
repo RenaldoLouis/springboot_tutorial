@@ -162,7 +162,10 @@
 		
 		<!-- BUILD SUCCESS THIS 4 -->
 		
-		<!-- version 2.9.2 error for  springfox-swagger2 and  springfox-swagger-ui -->
+		<!-- version 2.9.2 error for  springfox-swagger2 and  springfox-swagger-ui 
+		source:
+		https://stackoverflow.com/questions/58431876/why-hateoas-starts-creating-issue-for-spring-boot-version-2-2-x-during-startu
+		-->
 		<dependency>
 		    <groupId>io.springfox</groupId>
 		    <artifactId>springfox-swagger2</artifactId>
